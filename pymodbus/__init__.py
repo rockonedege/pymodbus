@@ -1,31 +1,25 @@
-'''
-Pymodbus: Modbus Protocol Implementation
------------------------------------------
+"""Pymodbus: Modbus Protocol Implementation.
 
-TwistedModbus is built on top of the code developed by:
+Released under the BSD license
+"""
 
-    Copyright (c) 2001-2005 S.W.A.C. GmbH, Germany.
-    Copyright (c) 2001-2005 S.W.A.C. Bohemia s.r.o., Czech Republic.
-    Hynek Petrak <hynek@swac.cz>
+__all__ = [
+    "ExceptionResponse",
+    "FramerType",
+    "Log",
+    "ModbusDeviceIdentification",
+    "ModbusException",
+    "__version__",
+    "__version_full__",
+    "pymodbus_apply_logging_config",
+]
 
-Released under the the BSD license
-'''
+from .exceptions import ModbusException
+from .framer import FramerType
+from .logging import Log, pymodbus_apply_logging_config
+from .pdu import ExceptionResponse
+from .pdu.device import ModbusDeviceIdentification
 
-import pymodbus.version as __version
-__version__ = __version.version.short()
-__author__  = 'Galen Collins'
-__maintainer__ = 'dhoomakethu'
 
-#---------------------------------------------------------------------------#
-# Block unhandled logging
-#---------------------------------------------------------------------------#
-import logging as __logging
-try:
-    from logging import NullHandler as __null
-except ImportError:
-    class __null(__logging.Handler):
-        def emit(self, record):
-            pass
-
-__logging.getLogger(__name__).addHandler(__null())
-
+__version__ = "4.0.0dev17"
+__version_full__ = f"[pymodbus, version {__version__}]"

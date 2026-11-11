@@ -1,208 +1,391 @@
-================================
 PyModbus - A Python Modbus Stack
 ================================
-
-.. image:: https://travis-ci.org/riptideio/pymodbus.svg?branch=master
-   :target: https://travis-ci.org/riptideio/pymodbus 
-.. image:: https://badges.gitter.im/Join%20Chat.svg
-   :target: https://gitter.im/pymodbus_dev/Lobby 
+.. image:: https://github.com/pymodbus-dev/pymodbus/actions/workflows/ci.yml/badge.svg?branch=dev
+   :target: https://github.com/pymodbus-dev/pymodbus/actions/workflows/ci.yml
 .. image:: https://readthedocs.org/projects/pymodbus/badge/?version=latest
-   :target: http://pymodbus.readthedocs.io/en/async/?badge=latest 
+   :target: https://pymodbus.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
-.. image:: http://pepy.tech/badge/pymodbus
-   :target: http://pepy.tech/project/pymodbus 
+.. image:: https://pepy.tech/badge/pymodbus
+   :target: https://pepy.tech/project/pymodbus
    :alt: Downloads
-   
-.. important::
-   **Note This is a Major release and might affect your existing Async client implementation. Refer examples on how to use the latest async clients.**
+.. image:: https://img.shields.io/badge/Gurubase-Ask%20PyModbus%20Guru-006BFF
+   :target: https://gurubase.io/g/pymodbus
+   :alt: PyModbus Guru
 
-------------------------------------------------------------
-Summary
-------------------------------------------------------------
+Pymodbus is a full Modbus protocol implementation offering a client, server and simulator with synchronous/asynchronous API.
+Please observe that pymodbus follows the standard modbus and have only limited support for non-standard devices.
 
-Pymodbus is a full Modbus protocol implementation using twisted for its
-asynchronous communications core.  It can also be used without any third
-party dependencies (aside from pyserial) if a more lightweight project is
-needed.  Furthermore, it should work fine under any python version > 2.7
-(including python 3+)
+Our releases follow the pattern `X.Y.Z`. We have strict rules for what different version number updates mean:
+
+- **Z**, No API changes! bug fixes and smaller enhancements.
+- **Y**, API changes, bug fixes and bigger enhancements.
+- **X**, Major changes in API and/or method to use pymodbus
+
+Upgrade examples:
+
+- 3.12.0 -> 3.12.2: just plugin the new version, no changes needed.
+                  Remark fixing bugs, can lead to a different behaviors/returns
+- 3.10.0 -> 3.12.0: Smaller changes to the pymodbus calls might be needed (Check `API_changes <https://github.com/pymodbus-dev/pymodbus/blob/dev/API_changes.rst>`_)
+- 2.5.4 -> 3.0.0: Major changes in the application might be needed
+
+**REMARK**: As can be seen from the above Pymodbus do NOT follow the semver.org standard.
+
+It is always recommended to read the
+`CHANGELOG <https://github.com/pymodbus-dev/pymodbus/blob/dev/CHANGELOG.rst>`_
+as well as the
+`API_changes <https://github.com/pymodbus-dev/pymodbus/blob/dev/API_changes.rst>`_
+files.
+
+Current release is `3.16.2 <https://github.com/pymodbus-dev/pymodbus/releases/tag/v3.16.2>`_.
+
+Bleeding edge (not released) is `dev <https://github.com/pymodbus-dev/pymodbus/tree/dev>`_.
+
+All changes are described in `release notes <https://pymodbus.readthedocs.io/en/latest/source/changelog.html>`_
+and all API changes are `documented <https://pymodbus.readthedocs.io/en/latest/source/api_changes.html>`_
+
+A big thanks to all the `volunteers <https://pymodbus.readthedocs.io/en/latest/source/authors.html>`_ that helps make pymodbus a great project.
+
+Source code is available on `github <https://github.com/pymodbus-dev/pymodbus>`_
+
+Full documentation for newest releases as well as the bleeding edge (dev) `readthedocs <https://pymodbus.readthedocs.io>`_
+
+Pymodbus in a nutshell
+----------------------
+Pymodbus consist of 5 parts:
+
+- **client**, connect to your favorite device(s)
+- **server**, create your own device(s)
+- **simulator**, an html based server simulator
+- **examples**, showing both simple and advanced usage
+
+Common features
+^^^^^^^^^^^^^^^
+* Full modbus standard protocol implementation
+* Support for custom function codes
+* Support serial (rs-485), tcp, tls and udp communication
+* Support all standard frames: socket, rtu, rtu-over-tcp, tcp and ascii
+* Does not have third party dependencies, apart from pyserial (optional)
+* Very lightweight project
+* Requires Python >= 3.10
+* Thorough test suite, that test all corners of the library (100% test coverage)
+* Automatically tested on Windows, Linux and MacOS combined with python 3.10 - 3.14
+* Strongly typed API (py.typed present)
+
+The modbus protocol specification: Modbus_Application_Protocol_V1_1b3.pdf can be found on
+`modbus org <https://modbus.org>`_
 
 
-------------------------------------------------------------
-Features
-------------------------------------------------------------
-
-~~~~~~~~~~~~~~~~~~~~
 Client Features
-~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^
+* Asynchronous API and synchronous API for applications
+* Very simple setup and call sequence (just 6 lines of code)
+* Utilities to convert python data types to/from multiple registers
 
-  * Full read/write protocol on discrete and register
-  * Most of the extended protocol (diagnostic/file/pipe/setting/information)
-  * TCP, UDP, Serial ASCII, Serial RTU, and Serial Binary
-  * asynchronous(powered by twisted/tornado/asyncio) and synchronous versions
-  * Payload builder/decoder utilities
-  * Pymodbus REPL for quick tests 
+`Client documentation <https://pymodbus.readthedocs.io/en/latest/source/client.html>`_
 
-~~~~~~~~~~~~~~~~~~~~
+
 Server Features
-~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^
+* Asynchronous implementation for high performance
+* Synchronous API classes for convenience (runs async internally)
+* Emulate real life devices
+* Full server control context (device information, counters, etc)
+* Different backend datastores to manage register values
+* Callback to intercept requests/responses
+* Work limited on RS485 in parallel with other devices
 
-  * Can function as a fully implemented modbus server
-  * TCP, UDP, Serial ASCII, Serial RTU, and Serial Binary
-  * asynchronous(powered by twisted) and synchronous versions
-  * Full server control context (device information, counters, etc)
-  * A number of backing contexts (database, redis, sqlite, a slave device)
+`Server documentation <https://pymodbus.readthedocs.io/en/latest/source/server.html>`_
 
-------------------------------------------------------------
+
+Simulator Features
+^^^^^^^^^^^^^^^^^^
+- Server simulator with WEB interface
+- Configure the structure of a real device
+- Monitor traffic online
+- Allow distributed team members to work on a virtual device using internet
+- Simulation of broken requests/responses
+- Simulation of error responses (hard to provoke in real devices)
+
+`Simulator documentation <https://pymodbus.readthedocs.io/en/dev/source/simulator.html>`_
+
 Use Cases
-------------------------------------------------------------
+---------
+The client is the most typically used. It is embedded into applications,
+where it abstract the modbus protocol from the application by providing an
+easy to use API. The client is integrated into some well known projects like
+`home-assistant <https://www.home-assistant.io>`_.
 
 Although most system administrators will find little need for a Modbus
-server on any modern hardware, they may find the need to query devices on
-their network for status (PDU, PDR, UPS, etc).  Since the library is written
-in python, it allows for easy scripting and/or integration into their existing
-solutions.
+server, the server is handy to verify the functionality of an application.
 
-Continuing, most monitoring software needs to be stress tested against
-hundreds or even thousands of devices (why this was originally written), but
-getting access to that many is unwieldy at best.  The pymodbus server will allow
-a user to test as many devices as their base operating system will allow (*allow*
-in this case means how many Virtual IP addresses are allowed).
+The simulator and/or server is often used to simulate real life devices testing
+applications. The server is excellent to perform high volume testing (e.g.
+hundreds of devices connected to the application). The advantage of the server is
+that it runs not only on "normal" computers but also on small ones like a Raspberry PI.
+
+Since the library is written in python, it allows for easy scripting and/or integration into existing
+solutions.
 
 For more information please browse the project documentation:
 
-http://riptideio.github.io/pymodbus/ 
-or
-http://readthedocs.org/docs/pymodbus/en/latest/index.html
+https://readthedocs.org/docs/pymodbus/en/latest/index.html
 
-------------------------------------------------------------
+
+
+Install
+-------
+The library is available on pypi.org and github.com to install with
+
+- :code:`pip` for those who just want to use the library
+- :code:`git clone` for those who wants to help or just are curious
+
+Be aware that there are a number of project, who have forked pymodbus and
+
+- Seems just to provide a version frozen in time
+- Extended pymodbus with extra functionality
+
+The latter is not because we rejected the extra functionality (we welcome all changes),
+but because the codeowners made that decision.
+
+In both cases, please understand, we cannot offer support to users of these projects as we do not known
+what have been changed nor what status the forked code have.
+
+A growing number of Linux distributions include pymodbus in their standard installation.
+
+You need to have python3 installed, preferable 3.11.
+
+Install with pip
+^^^^^^^^^^^^^^^^
+.. note::
+   This section is intended for apps that uses the pymodbus library.
+
+You can install using pip by issuing the following
+commands in a terminal window::
+
+   pip install pymodbus
+
+If you want to use the serial interface::
+
+   pip install pymodbus[serial]
+
+This will install pymodbus with the pyserial dependency.
+
+Pymodbus offers a number of extra options:
+
+- **serial**, needed for serial communication
+- **simulator**, needed by pymodbus.simulator
+- **documentation**, needed to generate documentation
+- **development**, needed for development
+- **all**, installs all of the above
+
+which can be installed as::
+
+   pip install pymodbus[<option>,...]
+
+It is possible to install old releases if needed::
+
+   pip install pymodbus==3.5.4
+
+
+Install with github
+^^^^^^^^^^^^^^^^^^^
+On github, fork https://github.com/pymodbus-dev/pymodbus.git
+
+Clone the source, and make a virtual environment::
+
+
+   git clone git://github.com/<your account>/pymodbus.git
+   cd pymodbus
+   python3 -m venv .venv
+
+Activate the virtual environment, this command needs to be repeated in every new terminal::
+
+   source .venv/bin/activate
+
+To get a specific release::
+
+   git checkout v3.5.2
+
+or the bleeding edge::
+
+   git checkout dev
+
+.. note::
+   Please always make your changes in a branch, and never submit a pull request
+   from dev.
+
+Install required development tools in editable mode::
+
+    pip install -e ".[development]"
+
+Install all (allows creation of documentation etc) in editable mode::
+
+    pip install -e ".[all]"
+
+.. note::
+   The use of the ``-e`` (editable) flag is recommended when making changes. 
+   It registers the ``pymodbus`` namespace in your virtual environment using pointers to the 
+   source directory. This ensures that any changes you make to the core library are 
+   immediately reflected when running examples or tests.
+
+Install git hooks, that helps control the commit and avoid errors when submitting a Pull Request::
+   cp githooks/* .git/hooks
+
+
+The repository contains a number of important branches and tags.
+  * **dev** is where all development happens, this branch is not always stable.
+  * **master** is where are releases are kept.
+  * **vX.Y.Z** (e.g. v2.5.3) is a specific release
+
+
 Example Code
-------------------------------------------------------------
+------------
+For those of you who just want to get started quickly, here you go::
 
-For those of you that just want to get started fast, here you go::
+    from pymodbus.client import ModbusTcpClient
 
-    from pymodbus.client.sync import ModbusTcpClient
-    
-    client = ModbusTcpClient('127.0.0.1')
+    client = ModbusTcpClient('MyDevice.lan')
+    client.connect()
     client.write_coil(1, True)
     result = client.read_coils(1,1)
     print(result.bits[0])
     client.close()
 
-For more advanced examples, check out the examples included in the
-respository. If you have created any utilities that meet a specific
+We provide a couple of simple ready to go clients:
+
+- `async client <https://github.com/pymodbus-dev/pymodbus/blob/dev/examples/simple_async_client.py>`_
+- `sync client <https://github.com/pymodbus-dev/pymodbus/blob/dev/examples/simple_sync_client.py>`_
+
+For more advanced examples, check out `Examples <https://pymodbus.readthedocs.io/en/dev/source/examples.html>`_ included in the
+repository. If you have created any utilities that meet a specific
 need, feel free to submit them so others can benefit.
 
-Also, if you have questions, please ask them on the mailing list
-so that others can benefit from the results and so that I can
-trace them. I get a lot of email and sometimes these requests
-get lost in the noise: http://groups.google.com/group/pymodbus or 
-at gitter:  https://gitter.im/pymodbus_dev/Lobby
+Also, if you have a question, please `create a post in discussions q&a topic <https://github.com/pymodbus-dev/pymodbus/discussions/new?category=q-a>`_,
+so that others can benefit from the results.
 
-------------------------------------------------------------
-Pymodbus REPL (Read Evaluate Print Loop)
-------------------------------------------------------------
-Starting with Pymodbus 2.x, pymodbus library comes with handy
-Pymodbus REPL to quickly run the modbus clients in tcp/rtu modes.
+If you think, that something in the code is broken/not running well, please `open an issue <https://github.com/pymodbus-dev/pymodbus/issues/new>`_,
+read the Template-text first and then post your issue with your setup information.
 
-Pymodbus REPL comes with many handy features such as payload decoder 
-to directly retrieve the values in desired format and supports all
-the diagnostic function codes directly .
+`Example documentation <https://pymodbus.readthedocs.io/en/dev/source/examples.html>`_
 
-For more info on REPL refer  `Pymodbus REPL <https://github.com/riptideio/pymodbus/tree/master/pymodbus/repl>`_
+Ready to go simulator
+^^^^^^^^^^^^^^^^^^^^^
+The simulator can be started directly using the installed entry point::
 
-.. image:: https://asciinema.org/a/y1xOk7lm59U1bRBE2N1pDIj2o.png
-   :target: https://asciinema.org/a/y1xOk7lm59U1bRBE2N1pDIj2o
+    pymodbus.simulator --modbus_device device_try
 
-------------------------------------------------------------
-Installing
-------------------------------------------------------------
+**Configuration Parameters:**
 
-You can install using pip or easy install by issuing the following
-commands in a terminal window (make sure you have correct
-permissions or a virtualenv currently running)::
+To ensure the simulator starts with the correct data context, use the following flags:
 
-    easy_install -U pymodbus
-    pip install  -U pymodbus
+* ``--json_file``: Path to the configuration JSON (defaults to the internal ``setup.json``).
+* ``--modbus_server``: Selects the server type from the JSON ``server_list``.
+* ``--modbus_device``: Selects the device registers from the JSON ``device_list``.
+* ``--http_port``: Port for the Web UI (default: 8081).
+* ``--log``: Sets the log level (default: info).
 
-To Install pymodbus with twisted support run::
+.. note:: Starting the simulator without explicit parameters may load an internal default configuration.
 
-    pip install -U pymodbus[twisted]
+Troubleshooting examples
+^^^^^^^^^^^^^^^^^^^^^^^^
+If you encounter errors while running examples, please check:
 
-To Install pymodbus with tornado support run::
+1. **Namespace Error** (``*** ERROR --> PyModbus not found``): 
+   The pymodbus package is not registered/installed. Please ensure you followed the installation 
+   steps in the `Install with github`_ section above.
 
-    pip install -U pymodbus[tornado]
+2. **Directory Error** (``*** ERROR --> THIS EXAMPLE needs the example directory...``): 
+   You are in the wrong folder. You **must** run the script from within the 
+   ``examples/`` directory.
 
-To Install pymodbus REPL::
 
-    pip install -U pymodbus[repl]
-
-Otherwise you can pull the trunk source and install from there::
-
-    git clone git://github.com/bashwork/pymodbus.git
-    cd pymodbus
-    python setup.py install
-
-Either method will install all the required dependencies
-(at their appropriate versions) for your current python distribution.
-
-If you would like to install pymodbus without the twisted dependency,
-simply edit the setup.py file before running easy_install and comment
-out all mentions of twisted.  It should be noted that without twisted,
-one will only be able to run the synchronized version as the
-asynchronous versions uses twisted for its event loop.
-
-------------------------------------------------------------
-Current Work In Progress
-------------------------------------------------------------
-
-Since I don't have access to any live modbus devices anymore
-it is a bit hard to test on live hardware. However, if you would
-like your device tested, I accept devices via mail or by IP address.
-
-That said, the current work mainly involves polishing the library as
-I get time doing such tasks as:
-
-  * Make PEP-8 compatible and flake8 ready
-  * Fixing bugs/feature requests
-  * Architecture documentation
-  * Functional testing against any reference I can find
-  * The remaining edges of the protocol (that I think no one uses)
-  * Asynchronous clients with support to tornado , asyncio  
-
-------------------------------------------------------------
-Development Instructions
-------------------------------------------------------------
-The current code base is compatible with both py2 and py3.
-Use make to perform a range of activities
-
-::
-
-    $ make
-       Makefile for pymodbus
-
-    Usage:
-
-     make install    install the package in a virtual environment
-     make reset      recreate the virtual environment
-     make check      check coding style (PEP-8, PEP-257)
-     make test       run the test suite, report coverage
-     make tox        run the tests on all Python versions
-     make clean      cleanup all temporary files 
-
-------------------------------------------------------------
 Contributing
-------------------------------------------------------------
-Just fork the repo and raise your PR against `dev` branch.
+------------
+Just fork the repo and raise your Pull Request against :code:`dev` branch, but please never
+make your changes on the :code:`dev` branch
 
-------------------------------------------------------------
+We always have more work than time, so feel free to open a discussion / issue on a theme you want to solve.
+
+If your company would like your device tested or have a cloud based device
+simulation, feel free to contact us.
+We are happy to help your company solve your modbus challenges.
+
+That said, the current work mainly involves polishing the library and
+solving issues:
+
+* Fixing bugs/feature requests
+* Architecture documentation
+* Functional testing against any reference we can find
+
+There are 2 bigger projects ongoing:
+
+   * rewriting the internal part of all clients (both sync and async)
+   * Add features to the simulator, and enhance the web design
+
+
+Development instructions
+------------------------
+The current code base is compatible with python >= 3.10.
+
+Here are some of the common commands to perform a range of activities::
+
+   source .venv/bin/activate   <-- Activate the virtual environment
+   ./check_ci.sh               <-- run the same checks as CI runs on a pull request.
+
+
+Make a pull request::
+
+   git checkout dev          <-- activate development branch
+   git pull                  <-- update branch with newest changes
+   git checkout -b feature   <-- make new branch for pull request
+   ... make source changes
+   git commit                <-- commit change to git
+   git push                  <-- push to your account on github
+
+   on github open a pull request, check that CI turns green and then wait for review comments.
+
+Test your changes::
+
+   cd test
+   pytest
+
+or
+   ./check_ci.sh
+
+This command also generates the coverage files, which are stored in :code:`build/cov``
+
+you can also do extended testing::
+
+   pytest --cov         <-- Coverage html report in build/html
+   pytest --profile     <-- Call profile report in prof
+
+Internals
+^^^^^^^^^
+
+There is no documentation of the architecture (help is welcome), but most classes and
+methods are documented:
+
+`Pymodbus internals <https://pymodbus.readthedocs.io/en/dev/source/internals.html>`_
+
+
+Generate documentation
+^^^^^^^^^^^^^^^^^^^^^^
+
+**Remark** Assumes that you have installed documentation tools:;
+
+   pip install ".[documentation]"
+
+to build do::
+
+   cd doc
+   ./build_html
+
+The documentation is available in <root>/build/html
+
+Remark: this generates a new zip/tgz file of examples which are uploaded.
+
+
 License Information
-------------------------------------------------------------
+-------------------
 
-Pymodbus is built on top of code developed from/by:
-  * Copyright (c) 2001-2005 S.W.A.C. GmbH, Germany.
-  * Copyright (c) 2001-2005 S.W.A.C. Bohemia s.r.o., Czech Republic.
-
-  * Hynek Petrak, https://github.com/HynekPetrak
-  * Twisted Matrix
-
-Released under the `BSD License <LICENSE>`_
+Released under the `BSD License <https://github.com/pymodbus-dev/pymodbus/blob/dev/LICENSE>`_
